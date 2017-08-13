@@ -79,15 +79,33 @@ def gradient_ascent(loss_op, grads_op, input_img_pl, input_img_data):
 
     return input_img_data, loss_value
 
+def draw_image(filters, img_width, img_height, margin = 5):
+    # build a black picture with enough space for
+    # our 8 x 8 filters of size 128 x 128, with a 5px margin in between
+    width = n * img_width + (n - 1) * margin
+    height = n * img_height + (n - 1) * margin
+    stitched_filters = np.zeros((width, height, 3))
+    
+    # fill the picture with our saved filters
+    for i in range(n):
+        for j in range(n):
+            img, loss = filters[i * n + j]
+            stitched_filters[(img_width + margin) * i: (img_width + margin) * i + img_width,
+                             (img_height + margin) * j: (img_height + margin) * j + img_height, :] = img
+    
+    # save the result to disk
+    imsave('stitched_filters_%dx%d.png' % (n, n), stitched_filters)
+    
+
 if __name__ == '__main__':
     
     # parameters
     img_width = 128
     img_height = 128
     layer_name = 'block5_conv1'
-    n_filters = 200
+    n_filters = 1
     step = 1.                       # step size for gradient ascent
-    n = 8                           # we will stich the best 64 filters on a 8 x 8 grid.
+    n = 1                           # we will stich the best 64 filters on a 8 x 8 grid.
 
     # 1. build the VGG16 network with ImageNet weights
     model = vgg16.VGG16(weights='imagenet', include_top=False)
@@ -120,22 +138,6 @@ if __name__ == '__main__':
         kept_filters.sort(key=lambda x: x[1], reverse=True)
         kept_filters = kept_filters[:n * n]
         
-        # build a black picture with enough space for
-        # our 8 x 8 filters of size 128 x 128, with a 5px margin in between
-        margin = 5
-        width = n * img_width + (n - 1) * margin
-        height = n * img_height + (n - 1) * margin
-        stitched_filters = np.zeros((width, height, 3))
-        
-        # fill the picture with our saved filters
-        for i in range(n):
-            for j in range(n):
-                img, loss = kept_filters[i * n + j]
-                stitched_filters[(img_width + margin) * i: (img_width + margin) * i + img_width,
-                                 (img_height + margin) * j: (img_height + margin) * j + img_height, :] = img
-        
-        # save the result to disk
-        imsave('stitched_filters_%dx%d.png' % (n, n), stitched_filters)
-
+        draw_image(kept_filters, img_width, img_height)
 
 
