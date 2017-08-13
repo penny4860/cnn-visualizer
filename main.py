@@ -68,7 +68,7 @@ def gradient_ascent(loss_op, grads_op, input_img_pl, input_img_data):
     iterate = K.function([input_img_pl], [loss_op, grads_op])
 
     # we run gradient ascent for 20 steps
-    for _ in range(20):
+    for _ in range(4):
         loss_value, grads_value = iterate([input_img_data])
         input_img_data += grads_value * step
 
@@ -79,16 +79,28 @@ def gradient_ascent(loss_op, grads_op, input_img_pl, input_img_data):
 
     return input_img_data, loss_value
 
-def draw_image(filters, img_width, img_height, margin = 5):
+def draw_image(filters, img_width, img_height, n, margin = 5):
+    
+    print(len(filters))
+    
+    # the filters that have the highest loss are assumed to be better-looking.
+    # we will only keep the top 64 filters.
+    filters.sort(key=lambda x: x[1], reverse=True)
+    filters = kept_filters[:n * n]
+
     # build a black picture with enough space for
     # our 8 x 8 filters of size 128 x 128, with a 5px margin in between
     width = n * img_width + (n - 1) * margin
     height = n * img_height + (n - 1) * margin
     stitched_filters = np.zeros((width, height, 3))
     
+    print(len(filters), n)
+    
     # fill the picture with our saved filters
     for i in range(n):
         for j in range(n):
+            
+            print(i, n, j)
             img, loss = filters[i * n + j]
             stitched_filters[(img_width + margin) * i: (img_width + margin) * i + img_width,
                              (img_height + margin) * j: (img_height + margin) * j + img_height, :] = img
@@ -103,9 +115,9 @@ if __name__ == '__main__':
     img_width = 128
     img_height = 128
     layer_name = 'block5_conv1'
-    n_filters = 1
+    n_filters = 4
     step = 1.                       # step size for gradient ascent
-    n = 1                           # we will stich the best 64 filters on a 8 x 8 grid.
+    n = 2                           # we will stich the best 64 filters on a 8 x 8 grid.
 
     # 1. build the VGG16 network with ImageNet weights
     model = vgg16.VGG16(weights='imagenet', include_top=False)
@@ -133,11 +145,6 @@ if __name__ == '__main__':
         end_time = time.time()
         print('Filter %d processed in %ds' % (filter_index, end_time - start_time))
     
-        # the filters that have the highest loss are assumed to be better-looking.
-        # we will only keep the top 64 filters.
-        kept_filters.sort(key=lambda x: x[1], reverse=True)
-        kept_filters = kept_filters[:n * n]
-        
-        draw_image(kept_filters, img_width, img_height)
+    draw_image(kept_filters, img_width, img_height, n)
 
 
