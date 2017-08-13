@@ -136,7 +136,8 @@ if __name__ == '__main__':
         # create loss operation
         loss = create_loss_tensor(layer_name)
         grads = create_grad_tensor(loss, model.input)
-        input_img_data, loss_value = gradient_ascent(loss, grads, model.input, random_gray_image())    
+        # input_img_data (1, 128, 128, 3)
+        input_img_data, loss_value = gradient_ascent(loss, grads, model.input, random_gray_image())
     
         # decode the resulting input image
         if loss_value > 0:
