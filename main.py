@@ -36,7 +36,7 @@ def normalize(x):
     # utility function to normalize a tensor by its L2 norm
     return x / (K.sqrt(K.mean(K.square(x))) + 1e-5)
 
-def create_loss_tensor(layer_name):
+def create_loss_tensor(layer_name, filter_index):
     # we build a loss function that maximizes the activation
     # of the nth filter of the layer considered
     layer_output = layer_dict[layer_name].output
@@ -70,6 +70,8 @@ def gradient_ascent(loss_op, grads_op, input_img_pl, input_img_data):
     # we run gradient ascent for 20 steps
     for _ in range(4):
         loss_value, grads_value = iterate([input_img_data])
+        print(input_img_data.shape, grads_value.shape)
+        
         input_img_data += grads_value * step
 
         print('Current loss value:', loss_value)
@@ -128,7 +130,7 @@ if __name__ == '__main__':
         start_time = time.time()
 
         # create loss operation
-        loss = create_loss_tensor(layer_name)
+        loss = create_loss_tensor(layer_name, filter_index)
         grads = create_grad_tensor(loss, model.input)
         # input_img_data (1, 128, 128, 3)
         input_img_data, loss_value = gradient_ascent(loss, grads, model.input, random_gray_image())
