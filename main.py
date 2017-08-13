@@ -81,8 +81,6 @@ def gradient_ascent(loss_op, grads_op, input_img_pl, input_img_data):
 
 def draw_image(filters, img_width, img_height, n, margin = 5):
     
-    print(len(filters))
-    
     # the filters that have the highest loss are assumed to be better-looking.
     # we will only keep the top 64 filters.
     filters.sort(key=lambda x: x[1], reverse=True)
@@ -94,13 +92,9 @@ def draw_image(filters, img_width, img_height, n, margin = 5):
     height = n * img_height + (n - 1) * margin
     stitched_filters = np.zeros((width, height, 3))
     
-    print(len(filters), n)
-    
     # fill the picture with our saved filters
     for i in range(n):
         for j in range(n):
-            
-            print(i, n, j)
             img, loss = filters[i * n + j]
             stitched_filters[(img_width + margin) * i: (img_width + margin) * i + img_width,
                              (img_height + margin) * j: (img_height + margin) * j + img_height, :] = img
