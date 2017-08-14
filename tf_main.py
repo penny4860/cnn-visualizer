@@ -22,6 +22,32 @@ def load_vgg_16(sess):
     value = filter_[:,:,:,0].reshape(-1,)
     print(value)
 
+
+class Vgg16(object):
+    def __init__(self, input_tensor):
+        # Build convolutional layers only
+        self.conv1_1 = slim.conv2d(input_tensor, 64, [3, 3], scope='vgg_16/conv1/conv1_1')
+        self.conv1_2 = slim.conv2d(self.conv1_1, 64, [3, 3], scope='vgg_16/conv1/conv1_2')
+        self.pool1 = slim.max_pool2d(self.conv1_2, [2, 2], scope='pool1')
+        
+        self.conv2_1 = slim.conv2d(self.pool1, 128, [3, 3], scope='vgg_16/conv2/conv2_1')
+        self.conv2_2 = slim.conv2d(self.conv2_1, 128, [3, 3], scope='vgg_16/conv2/conv2_2')
+        self.pool2 = slim.max_pool2d(self.conv2_2, [2, 2], scope='pool2')
+        
+        self.conv3_1 = slim.conv2d(self.pool2, 256, [3, 3], scope='vgg_16/conv3/conv3_1')
+        self.conv3_2 = slim.conv2d(self.conv3_1, 256, [3, 3], scope='vgg_16/conv3/conv3_2')
+        self.conv3_3 = slim.conv2d(self.conv3_2, 256, [3, 3], scope='vgg_16/conv3/conv3_3')
+        self.pool3 = slim.max_pool2d(self.conv3_3, [2, 2], scope='pool3')
+         
+        self.conv4_1 = slim.conv2d(self.pool3, 512, [3, 3], scope='vgg_16/conv4/conv4_1')
+        self.conv4_2 = slim.conv2d(self.conv4_1, 512, [3, 3], scope='vgg_16/conv4/conv4_2')
+        self.conv4_3 = slim.conv2d(self.conv4_2, 512, [3, 3], scope='vgg_16/conv4/conv4_3')
+        self.pool4 = slim.max_pool2d(self.conv4_3, [2, 2], scope='pool4')
+         
+        self.conv4_1 = slim.conv2d(self.pool4, 512, [3, 3], scope='vgg_16/conv5/conv5_1')
+        self.conv4_2 = slim.conv2d(self.conv4_1, 512, [3, 3], scope='vgg_16/conv5/conv5_2')
+        self.conv4_3 = slim.conv2d(self.conv4_2, 512, [3, 3], scope='vgg_16/conv5/conv5_3')
+
 def build_vgg16(input_tensor):
     net = slim.conv2d(input_tensor, 64, [3, 3], scope='vgg_16/conv1/conv1_1')
     net = slim.conv2d(net, 64, [3, 3], scope='vgg_16/conv1/conv1_2')
@@ -73,9 +99,10 @@ if __name__ == '__main__':
     
     # 1. Build graph
     X = tf.placeholder(tf.float32, [None, 128, 128, 3])
+    vgg = Vgg16(X)
 
     # 2. activation_op / loss_op / grads_op
-    activation_op = build_vgg16(X)
+    activation_op = vgg.conv4_1
     loss_op = tf.reduce_mean(activation_op[:,:,:,filter_index])
     grads_op = tf.gradients(loss_op, X)[0]
     grads_op = grads_op / tf.sqrt(tf.reduce_mean(tf.square(grads_op))) + tf.constant(1e-5)
