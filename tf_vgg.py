@@ -5,6 +5,7 @@ from __future__ import print_function
 
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
+import matplotlib.pyplot as plt
 
 
 def load_vgg_16(sess):
@@ -51,6 +52,22 @@ def initialize_random_image(w=128, h=128):
     image = (image - 0.5) * 20 + 128
     return image
 
+def deprocess_image(x):
+    # normalize tensor: center on 0., ensure std is 0.1
+    x -= x.mean()
+    x /= (x.std() + 1e-5)
+    x *= 0.1
+
+    # clip to [0, 1]
+    x += 0.5
+    x = np.clip(x, 0, 1)
+
+    # convert to RGB array
+    x *= 255
+    x = np.clip(x, 0, 255).astype('uint8')
+    return x
+
+
 
 filter_index = 0
 if __name__ == '__main__':
@@ -64,7 +81,7 @@ if __name__ == '__main__':
     loss_op = tf.reduce_mean(activation_op[:,:,:,filter_index])
     grads_op = tf.gradients(loss_op, X)[0]
     print(grads_op.get_shape())
-    grads_op = grads_op / tf.add(tf.sqrt(tf.reduce_mean(tf.square(grads_op))), tf.constant(1e-5))
+    grads_op = grads_op / tf.sqrt(tf.reduce_mean(tf.square(grads_op))) + tf.constant(1e-5)
     print(grads_op.get_shape())
 
     # 3. session
@@ -74,11 +91,15 @@ if __name__ == '__main__':
         load_vgg_16(sess)
 
         image = initialize_random_image()
-        for _ in range(10):
+        for _ in range(20):
             loss_value, grads_value = sess.run([loss_op, grads_op], feed_dict={X:image})
             image += grads_value
             print(loss_value)
             
+    image = deprocess_image(image[0])
+    plt.imshow(image)
+    plt.show()
+
 
 
 #     iterations = 10
