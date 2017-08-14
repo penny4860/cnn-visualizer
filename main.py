@@ -12,7 +12,21 @@ import time
 from keras.applications import vgg16
 from keras import backend as K
 
-# util function to convert a tensor into a valid image
+
+class ImageProcessor(object):
+    
+    def __init__(self):
+        pass
+    
+    def create_noise_image(self, w, h):
+        # we start from a gray image with some random noise
+        if K.image_data_format() == 'channels_first':
+            image = np.random.random((1, 3, w, h))
+        else:
+            image = np.random.random((1, w, h, 3))
+        image = (image - 0.5) * 20 + 128
+        return image
+    
 
 
 def deprocess_image(x):
@@ -52,15 +66,6 @@ def create_grad_tensor(loss, variables):
     grads = K.gradients(loss, variables)[0]
     grads = normalize(grads)
     return grads
-
-def random_gray_image():
-    # we start from a gray image with some random noise
-    if K.image_data_format() == 'channels_first':
-        image = np.random.random((1, 3, img_width, img_height))
-    else:
-        image = np.random.random((1, img_width, img_height, 3))
-    image = (image - 0.5) * 20 + 128
-    return image
 
 def gradient_ascent(loss_op, grads_op, input_img_pl, input_img_data):
 
@@ -133,7 +138,7 @@ if __name__ == '__main__':
         loss = create_loss_tensor(layer_name, filter_index)
         grads = create_grad_tensor(loss, model.input)
         # input_img_data (1, 128, 128, 3)
-        input_img_data, loss_value = gradient_ascent(loss, grads, model.input, random_gray_image())
+        input_img_data, loss_value = gradient_ascent(loss, grads, model.input, ImageProcessor().create_noise_image(128, 128))
     
         # decode the resulting input image
         if loss_value > 0:
