@@ -48,7 +48,7 @@ class VisualizerRunner:
     
     def run(self, w, h, n_filters=4, iterations=20):
         
-        kept_filters = []
+        images = []
         for i in range(0, n_filters):
     
             start_time = time.time()
@@ -56,10 +56,10 @@ class VisualizerRunner:
             end_time = time.time()
             
             if loss > 0:
-                kept_filters.append((img, loss))
-    
+                images.append((img, loss))
             print('Filter %d processed in %ds' % (i, end_time - start_time))
-        print(len(kept_filters))
+            
+        return images
         
     def _recon(self, w, h, filter_index, iterations):
         
@@ -110,7 +110,7 @@ def draw_image(filters, img_width, img_height, n, margin = 5):
     # the filters that have the highest loss are assumed to be better-looking.
     # we will only keep the top 64 filters.
     filters.sort(key=lambda x: x[1], reverse=True)
-    filters = kept_filters[:n * n]
+    filters = filters[:n * n]
 
     # build a black picture with enough space for
     # our 8 x 8 filters of size 128 x 128, with a 5px margin in between
@@ -134,15 +134,12 @@ if __name__ == '__main__':
     # parameters
     img_width = 128
     img_height = 128
-    layer_name = 'block5_conv1'
-    n_filters = 4
     step = 1.                       # step size for gradient ascent
-    n = 2                           # we will stich the best 64 filters on a 8 x 8 grid.
     model = vgg16.VGG16(weights='imagenet', include_top=False)
 
-    vis = Visualizer(model, layer_name)
+    vis = Visualizer(model, layer_name='block5_conv1')
     runner = VisualizerRunner(vis)
-    kept_filters = runner.run(img_width, img_height, n_filters=4, iterations=2)
+    images = runner.run(img_width, img_height, n_filters=6, iterations=2)
 
-
+    draw_image(images, img_width, img_height, n=2)
 
