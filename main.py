@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 '''Visualization of the filters of VGG16, via gradient ascent in input space.
 
 This script can run on CPU in a few minutes (with the TensorFlow backend).
@@ -12,20 +14,23 @@ import time
 from keras.applications import vgg16
 from keras import backend as K
 
-# util function to convert a tensor into a valid image
-
 
 class Visualizer(object):
+    """CNN model의 layer를 activation하는 image를 generation하는 class"""
     
     def __init__(self, cnn_model, layer_name, filter_index):
         self.cnn_model = cnn_model
-        self.loss_op = self._create_loss_op(layer_name, filter_index)
+        
+        self.layer_op = self._create_activation_op(layer_name)
+        self.loss_op = self._create_loss_op(filter_index)
         self.grad_op = self._create_grad_op()
 
-    def _create_loss_op(self, layer_name, filter_index):
+    def _create_activation_op(self, layer_name):
         layer_dict = dict([(layer.name, layer) for layer in self.cnn_model.layers[1:]])
-        layer_activation = layer_dict[layer_name].output
-        loss = K.mean(layer_activation[:, :, :, filter_index])
+        return layer_dict[layer_name].output
+
+    def _create_loss_op(self, filter_index):
+        loss = K.mean(self.layer_op[:, :, :, filter_index])
         return loss
     
     def _create_grad_op(self):
