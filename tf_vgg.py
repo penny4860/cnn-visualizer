@@ -34,12 +34,12 @@ def build_vgg16(input_tensor):
     net = slim.conv2d(net, 256, [3, 3], scope='vgg_16/conv3/conv3_2')
     net = slim.conv2d(net, 256, [3, 3], scope='vgg_16/conv3/conv3_3')
     net = slim.max_pool2d(net, [2, 2], scope='pool3')
-    
+     
     net = slim.conv2d(net, 512, [3, 3], scope='vgg_16/conv4/conv4_1')
     net = slim.conv2d(net, 512, [3, 3], scope='vgg_16/conv4/conv4_2')
     net = slim.conv2d(net, 512, [3, 3], scope='vgg_16/conv4/conv4_3')
     net = slim.max_pool2d(net, [2, 2], scope='pool4')
-    
+     
     net = slim.conv2d(net, 512, [3, 3], scope='vgg_16/conv5/conv5_1')
 #     net = slim.conv2d(net, 512, [3, 3], scope='vgg_16/conv5/conv5_2')
 #     net = slim.conv2d(net, 512, [3, 3], scope='vgg_16/conv5/conv5_3')
@@ -99,19 +99,3 @@ if __name__ == '__main__':
     image = deprocess_image(image[0])
     plt.imshow(image)
     plt.show()
-
-
-
-#     iterations = 10
-#     for _ in range(iterations):
-#         loss_value, grads_value = iterate_op([image])
-#         
-#         image += grads_value * step
-# 
-#         print('Current loss value:', loss_value)
-#         if loss_value <= 0.:
-#             # some filters get stuck to 0, we can skip them
-#             break
-
-
-
