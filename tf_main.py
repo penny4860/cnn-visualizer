@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # https://github.com/tensorflow/models/tree/master/slim
+# Visualization of the filters of VGG16, via gradient ascent in input space.
 
 from __future__ import print_function
 
@@ -67,22 +68,17 @@ def deprocess_image(x):
     x = np.clip(x, 0, 255).astype('uint8')
     return x
 
-
-
 filter_index = 0
 if __name__ == '__main__':
     
     # 1. Build graph
     X = tf.placeholder(tf.float32, [None, 128, 128, 3])
-    activation_op = build_vgg16(X)
 
     # 2. activation_op / loss_op / grads_op
-    activation_op = activation_op
+    activation_op = build_vgg16(X)
     loss_op = tf.reduce_mean(activation_op[:,:,:,filter_index])
     grads_op = tf.gradients(loss_op, X)[0]
-    print(grads_op.get_shape())
     grads_op = grads_op / tf.sqrt(tf.reduce_mean(tf.square(grads_op))) + tf.constant(1e-5)
-    print(grads_op.get_shape())
 
     # 3. session
     init_op = tf.global_variables_initializer()
@@ -99,3 +95,6 @@ if __name__ == '__main__':
     image = deprocess_image(image[0])
     plt.imshow(image)
     plt.show()
+
+
+
