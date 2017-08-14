@@ -57,7 +57,8 @@ class Visualizer(object):
             if loss_value <= 0.:
                 # some filters get stuck to 0, we can skip them
                 break
-    
+            
+        image = self._deprocess_image(image[0])
         return image, loss_value
 
     def _initialize_random_image(self, w, h):
@@ -66,22 +67,21 @@ class Visualizer(object):
         image = (image - 0.5) * 20 + 128
         return image
 
-def deprocess_image(x):
-    # normalize tensor: center on 0., ensure std is 0.1
-    x -= x.mean()
-    x /= (x.std() + 1e-5)
-    x *= 0.1
+    def _deprocess_image(self, x):
+        # normalize tensor: center on 0., ensure std is 0.1
+        x -= x.mean()
+        x /= (x.std() + 1e-5)
+        x *= 0.1
+    
+        # clip to [0, 1]
+        x += 0.5
+        x = np.clip(x, 0, 1)
+    
+        # convert to RGB array
+        x *= 255
+        x = np.clip(x, 0, 255).astype('uint8')
+        return x
 
-    # clip to [0, 1]
-    x += 0.5
-    x = np.clip(x, 0, 1)
-
-    # convert to RGB array
-    x *= 255
-    if K.image_data_format() == 'channels_first':
-        x = x.transpose((1, 2, 0))
-    x = np.clip(x, 0, 255).astype('uint8')
-    return x
 
 def draw_image(filters, img_width, img_height, n, margin = 5):
     
@@ -131,7 +131,6 @@ if __name__ == '__main__':
         end_time = time.time()
         
         if loss > 0:
-            img = deprocess_image(img[0])
             kept_filters.append((img, loss))
 
         print('Filter %d processed in %ds' % (i, end_time - start_time))
