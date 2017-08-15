@@ -7,9 +7,11 @@ from __future__ import print_function
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 import matplotlib.pyplot as plt
+import numpy as np
 
 from src.utils import initialize_random_images, deprocess_image
 
+np.set_printoptions(precision=5, linewidth=2000, suppress=True)
 
 def load_vgg_16(sess):
     variables = slim.get_variables()
