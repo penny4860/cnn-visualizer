@@ -7,6 +7,12 @@ Pure tensorflow version of [How convolutional neural networks see the world](htt
 <img src="images/image.png">
 
 
+## Prerequisites
+
+* python 3.5
+* tensorflow 1.0.1
+* numpy 1.12.0
+
 
 ## How to run
 
