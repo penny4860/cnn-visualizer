@@ -84,10 +84,9 @@ class VisualizerRunner:
         return image, loss_value
 
     def _initialize_random_image(self, w, h):
-        # we start from a gray image with some random noise
-        image = np.random.random((1, img_width, img_height, 3))
-        image = (image - 0.5) * 20 + 128
-        return image
+        from src.utils import initialize_random_images
+        return initialize_random_images(random_seed=111)
+    
 
     def _deprocess_image(self, x):
         # normalize tensor: center on 0., ensure std is 0.1
@@ -128,7 +127,7 @@ def draw_image(filters, img_width, img_height, n, margin = 5):
     # save the result to disk
     imsave('stitched_filters_%dx%d.png' % (n, n), stitched_filters)
     
-
+import matplotlib.pyplot as plt
 if __name__ == '__main__':
     
     # parameters
@@ -139,7 +138,12 @@ if __name__ == '__main__':
 
     vis = Visualizer(model, layer_name='block5_conv1')
     runner = VisualizerRunner(vis)
-    images = runner.run(img_width, img_height, n_filters=6, iterations=2)
+    images = runner.run(img_width, img_height, n_filters=1, iterations=20)
 
-    draw_image(images, img_width, img_height, n=2)
+    print(images[0][0].shape)
+    plt.imshow(images[0][0])
+    plt.show()
+
+
+#     draw_image(images, img_width, img_height, n=2)
 
