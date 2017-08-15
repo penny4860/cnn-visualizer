@@ -28,10 +28,21 @@ class ImgGenerateModel:
         grads_op = grads_op / tf.sqrt(tf.reduce_mean(tf.square(grads_op))) + tf.constant(1e-5)
         return grads_op
 
+def plot_images(images):
+    
+    n_images = len(images)
+    n_rows = int(np.sqrt(n_images))
+    n_cols = (n_images / n_rows) + 1
+    
+    fig, ax = plt.subplots()
+    for i, image in enumerate(images):
+        plt.subplot(n_rows, n_cols, i+1)
+        plt.imshow(image)
+        plt.axis("off")
+    # plt.subplots_adjust(left=0, bottom=0, right=1.0, top=0.9, wspace=0.4, hspace=0.4)
+    plt.show()
 
 if __name__ == '__main__':
-    filter_index = 0
-    
     # 1. Input Tensor
     X = tf.placeholder(tf.float32, [None, 128, 128, 3])
 
@@ -39,13 +50,11 @@ if __name__ == '__main__':
     vggnet = Vgg16(X)
 
     # 3. Image Generator instance
-    gen = ImgGenerateModel(vggnet.input, vggnet.conv5_1[:, :, :, filter_index])
-    
-    # 4. recon image
-    image = recon(vggnet, gen)
+    images = []
+    for i in range(4):
+        gen = ImgGenerateModel(vggnet.input, vggnet.conv5_1[:, :, :, i])
+        image = recon(vggnet, gen)
+        images.append(image)
 
-    plt.imshow(image)
-    plt.show()
-
-
+    plot_images(images)
 
