@@ -2,6 +2,8 @@ import tensorflow.contrib.slim as slim
 
 class Vgg16(object):
     def __init__(self, input_tensor):
+        self.input = input_tensor
+        
         # Build convolutional layers only
         self.conv1_1 = slim.conv2d(input_tensor, 64, [3, 3], scope='vgg_16/conv1/conv1_1')
         self.conv1_2 = slim.conv2d(self.conv1_1, 64, [3, 3], scope='vgg_16/conv1/conv1_2')

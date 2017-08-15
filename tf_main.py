@@ -39,7 +39,7 @@ if __name__ == '__main__':
     vggnet = Vgg16(X)
 
     # 3. Image Generator instance
-    gen = ImgGenerator(X, vggnet.conv5_1[:, :, :, filter_index])
+    gen = ImgGenerator(vggnet.input, vggnet.conv5_1[:, :, :, filter_index])
     
     # 4. session
     init_op = tf.global_variables_initializer()
