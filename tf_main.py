@@ -5,83 +5,45 @@
 from __future__ import print_function
 
 import tensorflow as tf
-import tensorflow.contrib.slim as slim
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.utils import initialize_random_images, deprocess_image
+from src.utils import recon
+from src.vgg import Vgg16
 
 np.set_printoptions(precision=5, linewidth=2000, suppress=True)
 
-def load_vgg_16(sess):
-    variables = slim.get_variables()
-    for v in variables:
-        print(v.name, v.get_shape())
-    print("==================================")
+
+class ImgGenerateModel:
     
-    init_assign_op, init_feed_dict = slim.assign_from_checkpoint('ckpts/vgg_16.ckpt', variables)
-
-    sess.run(init_assign_op, init_feed_dict)
-    filter_ = sess.run(variables[0])
-    value = filter_[:,:,:,0].reshape(-1,)
-    print(value)
-
-
-class Vgg16(object):
-    def __init__(self, input_tensor):
-        # Build convolutional layers only
-        self.conv1_1 = slim.conv2d(input_tensor, 64, [3, 3], scope='vgg_16/conv1/conv1_1')
-        self.conv1_2 = slim.conv2d(self.conv1_1, 64, [3, 3], scope='vgg_16/conv1/conv1_2')
-        self.pool1 = slim.max_pool2d(self.conv1_2, [2, 2], scope='pool1')
+    def __init__(self, input_tensor, activation):
+        self.loss_op = self._create_loss_op(activation)
+        self.grads_op = self._create_gradient_op()
         
-        self.conv2_1 = slim.conv2d(self.pool1, 128, [3, 3], scope='vgg_16/conv2/conv2_1')
-        self.conv2_2 = slim.conv2d(self.conv2_1, 128, [3, 3], scope='vgg_16/conv2/conv2_2')
-        self.pool2 = slim.max_pool2d(self.conv2_2, [2, 2], scope='pool2')
-        
-        self.conv3_1 = slim.conv2d(self.pool2, 256, [3, 3], scope='vgg_16/conv3/conv3_1')
-        self.conv3_2 = slim.conv2d(self.conv3_1, 256, [3, 3], scope='vgg_16/conv3/conv3_2')
-        self.conv3_3 = slim.conv2d(self.conv3_2, 256, [3, 3], scope='vgg_16/conv3/conv3_3')
-        self.pool3 = slim.max_pool2d(self.conv3_3, [2, 2], scope='pool3')
-         
-        self.conv4_1 = slim.conv2d(self.pool3, 512, [3, 3], scope='vgg_16/conv4/conv4_1')
-        self.conv4_2 = slim.conv2d(self.conv4_1, 512, [3, 3], scope='vgg_16/conv4/conv4_2')
-        self.conv4_3 = slim.conv2d(self.conv4_2, 512, [3, 3], scope='vgg_16/conv4/conv4_3')
-        self.pool4 = slim.max_pool2d(self.conv4_3, [2, 2], scope='pool4')
-         
-        self.conv5_1 = slim.conv2d(self.pool4, 512, [3, 3], scope='vgg_16/conv5/conv5_1')
-        self.conv5_2 = slim.conv2d(self.conv4_1, 512, [3, 3], scope='vgg_16/conv5/conv5_2')
-        self.conv5_3 = slim.conv2d(self.conv4_2, 512, [3, 3], scope='vgg_16/conv5/conv5_3')
+    def _create_loss_op(self, activation):
+        return tf.reduce_mean(activation)
+
+    def _create_gradient_op(self):
+        grads_op = tf.gradients(self.loss_op, X)[0]
+        grads_op = grads_op / tf.sqrt(tf.reduce_mean(tf.square(grads_op))) + tf.constant(1e-5)
+        return grads_op
 
 
-filter_index = 0
 if __name__ == '__main__':
+    filter_index = 0
     
-    # 1. Build graph
+    # 1. Input Tensor
     X = tf.placeholder(tf.float32, [None, 128, 128, 3])
-    vgg = Vgg16(X)
 
-    # 2. activation_op / loss_op / grads_op
-    activation_op = vgg.conv5_1
-    loss_op = tf.reduce_mean(activation_op[:,:,:,filter_index])
-    grads_op = tf.gradients(loss_op, X)[0]
-    grads_op = grads_op / tf.sqrt(tf.reduce_mean(tf.square(grads_op))) + tf.constant(1e-5)
+    # 2. VGG network instance
+    vggnet = Vgg16(X)
 
-    # 3. session
-    init_op = tf.global_variables_initializer()
-    with tf.Session() as sess:
-        sess.run(init_op)
-        load_vgg_16(sess)
+    # 3. Image Generator instance
+    gen = ImgGenerateModel(vggnet.input, vggnet.conv5_1[:, :, :, filter_index])
+    
+    # 4. recon image
+    image = recon(vggnet, gen)
 
-        image = initialize_random_images(random_seed=111)
-        for _ in range(20):
-            loss_value, grads_value = sess.run([loss_op, grads_op], feed_dict={X:image})
-            image += grads_value
-            print("=========================================================")
-            print(loss_value)
-            print(grads_value.reshape(-1,))
-
-            
-    image = deprocess_image(image[0])
     plt.imshow(image)
     plt.show()
 
