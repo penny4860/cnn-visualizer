@@ -7,20 +7,20 @@ class ImgGenerateModel:
     
     def __init__(self, input_tensor, activation):
         self.loss_op = self._create_loss_op(activation)
-        self.grads_op = self._create_gradient_op()
+        self.grads_op = self._create_gradient_op(input_tensor)
         
     def _create_loss_op(self, activation):
         return tf.reduce_mean(activation)
 
-    def _create_gradient_op(self):
+    def _create_gradient_op(self, X):
         grads_op = tf.gradients(self.loss_op, X)[0]
         grads_op = grads_op / tf.sqrt(tf.reduce_mean(tf.square(grads_op))) + tf.constant(1e-5)
         return grads_op
 
 
-def recon(vggnet, img_generator, n_iter=20):
+def recon(vggnet, img_generator, h, w, n_iter=20):
     
-    image = _init_images(random_seed=111)
+    image = _init_images(w=w, h=h, random_seed=111)
     init_op = tf.global_variables_initializer()
     with tf.Session() as sess:
         sess.run(init_op)
