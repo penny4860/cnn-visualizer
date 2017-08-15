@@ -33,6 +33,6 @@ First, you need to download the pre-learned checkpoint file.
 
 Now run main.py script. You can adjust options such as image size, layer name, and so on.
 
-
+In the cpu version, it takes only a minute to create one image.
 
 
