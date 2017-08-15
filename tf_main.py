@@ -99,7 +99,10 @@ if __name__ == '__main__':
         for _ in range(20):
             loss_value, grads_value = sess.run([loss_op, grads_op], feed_dict={X:image})
             image += grads_value
+            print("=========================================================")
             print(loss_value)
+            print(grads_value.reshape(-1,))
+
             
     image = deprocess_image(image[0])
     plt.imshow(image)
