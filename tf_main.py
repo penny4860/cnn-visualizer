@@ -11,6 +11,7 @@ from src.vgg import Vgg16
 if __name__ == '__main__':
     #################################################################################
     n_filters = 16
+    n_iter = 20
     w = 64
     h = 64
     layer_name = 'conv1_2'
@@ -26,7 +27,7 @@ if __name__ == '__main__':
     images = []
     for i in range(n_filters):
         gen = ImgGenerateModel(vggnet.input, vggnet.get_activation(layer_name), i)
-        image = recon(vggnet, gen, h, w)
+        image = recon(vggnet, gen, h, w, n_iter)
         images.append(image)
 
     plot_images(images)
