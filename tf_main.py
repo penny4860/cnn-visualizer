@@ -8,7 +8,7 @@ import tensorflow as tf
 import tensorflow.contrib.slim as slim
 import matplotlib.pyplot as plt
 
-from src.utils import initialize_random_images
+from src.utils import initialize_random_images, deprocess_image
 
 
 def load_vgg_16(sess):
@@ -73,22 +73,6 @@ def build_vgg16(input_tensor):
 #     net = slim.conv2d(net, 512, [3, 3], scope='vgg_16/conv5/conv5_2')
 #     net = slim.conv2d(net, 512, [3, 3], scope='vgg_16/conv5/conv5_3')
     return net
-
-import numpy as np
-def deprocess_image(x):
-    # normalize tensor: center on 0., ensure std is 0.1
-    x -= x.mean()
-    x /= (x.std() + 1e-5)
-    x *= 0.1
-
-    # clip to [0, 1]
-    x += 0.5
-    x = np.clip(x, 0, 1)
-
-    # convert to RGB array
-    x *= 255
-    x = np.clip(x, 0, 255).astype('uint8')
-    return x
 
 filter_index = 0
 if __name__ == '__main__':
