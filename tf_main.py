@@ -23,7 +23,7 @@ if __name__ == '__main__':
     images = []
     for i in range(4):
         gen = ImgGenerateModel(vggnet.input, vggnet.conv5_1[:, :, :, i])
-        image = recon(vggnet, gen)
+        image = recon(vggnet, gen, h, w)
         images.append(image)
 
     plot_images(images)
