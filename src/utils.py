@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+import matplotlib.pyplot as plt
 import tensorflow as tf
 
 def recon(vggnet, img_generator, n_iter=20):
@@ -19,6 +20,21 @@ def recon(vggnet, img_generator, n_iter=20):
     # image (1, w, h, 3)
     image = _deprocess_image(image[0])
     return image
+
+
+def plot_images(images):
+    
+    n_images = len(images)
+    n_rows = int(np.sqrt(n_images))
+    n_cols = (n_images / n_rows) + 1
+    
+    fig, ax = plt.subplots()
+    for i, image in enumerate(images):
+        plt.subplot(n_rows, n_cols, i+1)
+        plt.imshow(image)
+        plt.axis("off")
+    # plt.subplots_adjust(left=0, bottom=0, right=1.0, top=0.9, wspace=0.4, hspace=0.4)
+    plt.show()
 
 
 def _init_images(n_images=1, w=128, h=128, random_seed=None):
