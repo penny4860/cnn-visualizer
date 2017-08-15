@@ -84,10 +84,9 @@ class VisualizerRunner:
         return image, loss_value
 
     def _initialize_random_image(self, w, h):
-        # we start from a gray image with some random noise
-        image = np.random.random((1, img_width, img_height, 3))
-        image = (image - 0.5) * 20 + 128
-        return image
+        from src.utils import initialize_random_images
+        return initialize_random_images(random_seed=111)
+    
 
     def _deprocess_image(self, x):
         # normalize tensor: center on 0., ensure std is 0.1
