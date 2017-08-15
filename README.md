@@ -4,10 +4,11 @@ Visualization of the filters of VGG16, via gradient ascent in input space.
 
 Pure tensorflow version of [How convolutional neural networks see the world](https://blog.keras.io/how-convolutional-neural-networks-see-the-world.html)
 
-<img src="images/conv3_1.png">
+* Generated image of Convolutional Layer 3-1
+	* <img src="images/conv3_1.png">
 
-
-<img src="images/conv4_1.png">
+* Generated image of Convolutional Layer 4-1
+	* <img src="images/conv4_1.png">
 
 
 ## Prerequisites
