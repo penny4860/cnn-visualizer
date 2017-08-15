@@ -26,8 +26,28 @@ class Vgg16(object):
         self.conv5_1 = slim.conv2d(self.pool4, 512, [3, 3], scope='vgg_16/conv5/conv5_1')
         self.conv5_2 = slim.conv2d(self.conv4_1, 512, [3, 3], scope='vgg_16/conv5/conv5_2')
         self.conv5_3 = slim.conv2d(self.conv4_2, 512, [3, 3], scope='vgg_16/conv5/conv5_3')
+        
+        self.layers = {'conv1_1' : self.conv1_1,
+                       'conv1_2' : self.conv1_2,
+                       'conv2_1' : self.conv2_1,
+                       'conv2_2' : self.conv2_2,
+                       'conv3_1' : self.conv3_1,
+                       'conv3_2' : self.conv3_2,
+                       'conv3_3' : self.conv3_3,
+                       'conv4_1' : self.conv4_1,
+                       'conv4_2' : self.conv4_2,
+                       'conv4_3' : self.conv4_3,
+                       'conv5_1' : self.conv5_1,
+                       'conv5_2' : self.conv5_2,
+                       'conv5_3' : self.conv5_3}
 
     def load_ckpt(self, sess, ckpt='ckpts/vgg_16.ckpt'):
         variables = slim.get_variables(scope='vgg_16')
         init_assign_op, init_feed_dict = slim.assign_from_checkpoint(ckpt, variables)
         sess.run(init_assign_op, init_feed_dict)
+
+    def get_activation(self, layer_name='conv5_1'):
+        return self.layers[layer_name]
+
+
+
