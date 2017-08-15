@@ -87,7 +87,7 @@ if __name__ == '__main__':
     activation_op = vgg.conv5_1
     loss_op = tf.reduce_mean(activation_op[:,:,:,filter_index])
     grads_op = tf.gradients(loss_op, X)[0]
-    # grads_op = grads_op / tf.sqrt(tf.reduce_mean(tf.square(grads_op))) + tf.constant(1e-5)
+    grads_op = grads_op / tf.sqrt(tf.reduce_mean(tf.square(grads_op))) + tf.constant(1e-5)
 
     # 3. session
     init_op = tf.global_variables_initializer()
