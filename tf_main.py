@@ -14,7 +14,7 @@ from src.vgg import Vgg16
 np.set_printoptions(precision=5, linewidth=2000, suppress=True)
 
 
-class ImgGenerator:
+class ImgGenerateModel:
     
     def __init__(self, input_tensor, activation):
         self.loss_op = self._create_loss_op(activation)
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     vggnet = Vgg16(X)
 
     # 3. Image Generator instance
-    gen = ImgGenerator(vggnet.input, vggnet.conv5_1[:, :, :, filter_index])
+    gen = ImgGenerateModel(vggnet.input, vggnet.conv5_1[:, :, :, filter_index])
     
     # 4. recon image
     image = recon(vggnet, gen)
