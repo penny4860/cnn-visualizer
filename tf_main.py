@@ -29,8 +29,24 @@ class ImgGenerator:
         return grads_op
 
 
-filter_index = 0
+def recon(vggnet, img_generator, n_iter=20):
+    image = initialize_random_images(random_seed=111)
+    init_op = tf.global_variables_initializer()
+    with tf.Session() as sess:
+        sess.run(init_op)
+        vggnet.load_ckpt(sess)
+
+        for i in range(n_iter):
+            loss_value, grads_value = sess.run([img_generator.loss_op, img_generator.grads_op],
+                                               feed_dict={vggnet.input:image})
+            image += grads_value
+            print("Iter : {}, activation_score : {}".format(i, loss_value))
+            
+    # image (1, w, h, 3)
+    return deprocess_image(image[0])
+
 if __name__ == '__main__':
+    filter_index = 0
     
     # 1. Input Tensor
     X = tf.placeholder(tf.float32, [None, 128, 128, 3])
@@ -41,19 +57,9 @@ if __name__ == '__main__':
     # 3. Image Generator instance
     gen = ImgGenerator(vggnet.input, vggnet.conv5_1[:, :, :, filter_index])
     
-    # 4. session
-    init_op = tf.global_variables_initializer()
-    with tf.Session() as sess:
-        sess.run(init_op)
-        vggnet.load_ckpt(sess)
-        image = initialize_random_images(random_seed=111)
-        for i in range(20):
-            loss_value, grads_value = sess.run([gen.loss_op, gen.grads_op], feed_dict={X:image})
-            image += grads_value
-            print("Iter : {}, activation_score : {}".format(i, loss_value))
+    # 4. recon image
+    image = recon(vggnet, gen)
 
-            
-    image = deprocess_image(image[0])
     plt.imshow(image)
     plt.show()
 
