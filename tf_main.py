@@ -9,10 +9,12 @@ from src.utils import ImgGenerateModel, recon, plot_images
 from src.vgg import Vgg16
 
 if __name__ == '__main__':
-    
-    n_filters = 4
+    #################################################################################
+    n_filters = 16
     w = 64
     h = 64
+    layer_name = 'conv1_2'
+    #################################################################################
     
     # 1. Input Tensor
     X = tf.placeholder(tf.float32, [None, h, w, 3])
@@ -23,7 +25,7 @@ if __name__ == '__main__':
     # 3. Image Generator instance
     images = []
     for i in range(n_filters):
-        gen = ImgGenerateModel(vggnet.input, vggnet.conv5_1[:, :, :, i])
+        gen = ImgGenerateModel(vggnet.input, vggnet.get_activation(layer_name), i)
         image = recon(vggnet, gen, h, w)
         images.append(image)
 

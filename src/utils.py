@@ -5,8 +5,8 @@ import tensorflow as tf
 
 class ImgGenerateModel:
     
-    def __init__(self, input_tensor, activation):
-        self.loss_op = self._create_loss_op(activation)
+    def __init__(self, input_tensor, activation, i):
+        self.loss_op = self._create_loss_op(activation[:,:,:,i])
         self.grads_op = self._create_gradient_op(input_tensor)
         
     def _create_loss_op(self, activation):
