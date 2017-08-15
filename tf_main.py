@@ -9,8 +9,12 @@ from src.utils import ImgGenerateModel, recon, plot_images
 from src.vgg import Vgg16
 
 if __name__ == '__main__':
+    
+    w = 64
+    h = 64
+    
     # 1. Input Tensor
-    X = tf.placeholder(tf.float32, [None, 128, 128, 3])
+    X = tf.placeholder(tf.float32, [None, h, w, 3])
 
     # 2. VGG network instance
     vggnet = Vgg16(X)
