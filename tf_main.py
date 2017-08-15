@@ -8,6 +8,8 @@ import tensorflow as tf
 import tensorflow.contrib.slim as slim
 import matplotlib.pyplot as plt
 
+from src.utils import initialize_random_images
+
 
 def load_vgg_16(sess):
     variables = slim.get_variables()
@@ -73,12 +75,6 @@ def build_vgg16(input_tensor):
     return net
 
 import numpy as np
-def initialize_random_image(w=128, h=128):
-    # we start from a gray image with some random noise
-    image = np.random.random((1, w, h, 3))
-    image = (image - 0.5) * 20 + 128
-    return image
-
 def deprocess_image(x):
     # normalize tensor: center on 0., ensure std is 0.1
     x -= x.mean()
@@ -113,7 +109,7 @@ if __name__ == '__main__':
         sess.run(init_op)
         load_vgg_16(sess)
 
-        image = initialize_random_image()
+        image = initialize_random_images(random_seed=111)
         for _ in range(20):
             loss_value, grads_value = sess.run([loss_op, grads_op], feed_dict={X:image})
             image += grads_value
