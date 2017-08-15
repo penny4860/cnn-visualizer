@@ -10,6 +10,7 @@ from src.vgg import Vgg16
 
 if __name__ == '__main__':
     
+    n_filters = 4
     w = 64
     h = 64
     
@@ -21,7 +22,7 @@ if __name__ == '__main__':
 
     # 3. Image Generator instance
     images = []
-    for i in range(4):
+    for i in range(n_filters):
         gen = ImgGenerateModel(vggnet.input, vggnet.conv5_1[:, :, :, i])
         image = recon(vggnet, gen, h, w)
         images.append(image)
