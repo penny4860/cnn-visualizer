@@ -5,7 +5,6 @@
 from __future__ import print_function
 
 import tensorflow as tf
-import matplotlib.pyplot as plt
 import numpy as np
 
 from src.utils import recon, plot_images
