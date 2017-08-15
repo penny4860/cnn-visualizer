@@ -13,20 +13,6 @@ from src.utils import initialize_random_images, deprocess_image
 
 np.set_printoptions(precision=5, linewidth=2000, suppress=True)
 
-def load_vgg_16(sess):
-    variables = slim.get_variables()
-    for v in variables:
-        print(v.name, v.get_shape())
-    print("==================================")
-    
-    init_assign_op, init_feed_dict = slim.assign_from_checkpoint('ckpts/vgg_16.ckpt', variables)
-
-    sess.run(init_assign_op, init_feed_dict)
-    filter_ = sess.run(variables[0])
-    value = filter_[:,:,:,0].reshape(-1,)
-    print(value)
-
-
 class Vgg16(object):
     def __init__(self, input_tensor):
         # Build convolutional layers only
@@ -52,6 +38,10 @@ class Vgg16(object):
         self.conv5_2 = slim.conv2d(self.conv4_1, 512, [3, 3], scope='vgg_16/conv5/conv5_2')
         self.conv5_3 = slim.conv2d(self.conv4_2, 512, [3, 3], scope='vgg_16/conv5/conv5_3')
 
+    def load_ckpt(self, sess, ckpt='ckpts/vgg_16.ckpt'):
+        variables = slim.get_variables(scope='vgg_16')
+        init_assign_op, init_feed_dict = slim.assign_from_checkpoint(ckpt, variables)
+        sess.run(init_assign_op, init_feed_dict)
 
 filter_index = 0
 if __name__ == '__main__':
@@ -70,8 +60,7 @@ if __name__ == '__main__':
     init_op = tf.global_variables_initializer()
     with tf.Session() as sess:
         sess.run(init_op)
-        load_vgg_16(sess)
-
+        vgg.load_ckpt(sess)
         image = initialize_random_images(random_seed=111)
         for _ in range(20):
             loss_value, grads_value = sess.run([loss_op, grads_op], feed_dict={X:image})
