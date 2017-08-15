@@ -3,6 +3,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
+class ImgGenerateModel:
+    
+    def __init__(self, input_tensor, activation):
+        self.loss_op = self._create_loss_op(activation)
+        self.grads_op = self._create_gradient_op()
+        
+    def _create_loss_op(self, activation):
+        return tf.reduce_mean(activation)
+
+    def _create_gradient_op(self):
+        grads_op = tf.gradients(self.loss_op, X)[0]
+        grads_op = grads_op / tf.sqrt(tf.reduce_mean(tf.square(grads_op))) + tf.constant(1e-5)
+        return grads_op
+
+
 def recon(vggnet, img_generator, n_iter=20):
     
     image = _init_images(random_seed=111)
