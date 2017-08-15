@@ -8,7 +8,7 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.utils import initialize_random_images, deprocess_image
+from src.utils import recon
 from src.vgg import Vgg16
 
 np.set_printoptions(precision=5, linewidth=2000, suppress=True)
@@ -28,22 +28,6 @@ class ImgGenerator:
         grads_op = grads_op / tf.sqrt(tf.reduce_mean(tf.square(grads_op))) + tf.constant(1e-5)
         return grads_op
 
-
-def recon(vggnet, img_generator, n_iter=20):
-    image = initialize_random_images(random_seed=111)
-    init_op = tf.global_variables_initializer()
-    with tf.Session() as sess:
-        sess.run(init_op)
-        vggnet.load_ckpt(sess)
-
-        for i in range(n_iter):
-            loss_value, grads_value = sess.run([img_generator.loss_op, img_generator.grads_op],
-                                               feed_dict={vggnet.input:image})
-            image += grads_value
-            print("Iter : {}, activation_score : {}".format(i, loss_value))
-            
-    # image (1, w, h, 3)
-    return deprocess_image(image[0])
 
 if __name__ == '__main__':
     filter_index = 0
