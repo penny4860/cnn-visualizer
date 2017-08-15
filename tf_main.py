@@ -67,7 +67,6 @@ if __name__ == '__main__':
             image += grads_value
             print("=========================================================")
             print(loss_value)
-            print(grads_value.reshape(-1,))
 
             
     image = deprocess_image(image[0])
