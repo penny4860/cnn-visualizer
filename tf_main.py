@@ -62,11 +62,10 @@ if __name__ == '__main__':
         sess.run(init_op)
         vgg.load_ckpt(sess)
         image = initialize_random_images(random_seed=111)
-        for _ in range(20):
+        for i in range(20):
             loss_value, grads_value = sess.run([loss_op, grads_op], feed_dict={X:image})
             image += grads_value
-            print("=========================================================")
-            print(loss_value)
+            print("Iter : {}, activation_score : {}".format(i, loss_value))
 
             
     image = deprocess_image(image[0])
