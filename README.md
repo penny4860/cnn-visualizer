@@ -24,7 +24,7 @@ Pure tensorflow version of [How convolutional neural networks see the world](htt
 
 First, you need to download the pre-learned checkpoint file.
 
-* Download the vgg16 checkpoint file at https://github.com/tensorflow/models/tree/master/slim#pre-trained-models.
+* Download the vgg16 checkpoint file at https://github.com/tensorflow/models/tree/master/research/slim#pre-trained-models
 * Extract the downloaded file.
 * Move the ```vgg_16.ckpt``` file to the ```project/root/ckpts``` directory.
 
