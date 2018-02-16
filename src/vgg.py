@@ -24,8 +24,8 @@ class Vgg16(object):
         self.pool4 = slim.max_pool2d(self.conv4_3, [2, 2], scope='pool4')
          
         self.conv5_1 = slim.conv2d(self.pool4, 512, [3, 3], scope='vgg_16/conv5/conv5_1')
-        self.conv5_2 = slim.conv2d(self.conv4_1, 512, [3, 3], scope='vgg_16/conv5/conv5_2')
-        self.conv5_3 = slim.conv2d(self.conv4_2, 512, [3, 3], scope='vgg_16/conv5/conv5_3')
+        self.conv5_2 = slim.conv2d(self.conv5_1, 512, [3, 3], scope='vgg_16/conv5/conv5_2')
+        self.conv5_3 = slim.conv2d(self.conv5_2, 512, [3, 3], scope='vgg_16/conv5/conv5_3')
         
         self.layers = {'conv1_1' : self.conv1_1,
                        'conv1_2' : self.conv1_2,
